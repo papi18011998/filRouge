@@ -5,9 +5,15 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *          collectionOperations={
+ *          "post"={"access_control"="is_granted('POST', object)"}
+ *     },
+ * )
+ * @UniqueEntity("email", message="Cette email existe déjà dans la base")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User implements UserInterface
