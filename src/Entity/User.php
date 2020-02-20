@@ -8,11 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ApiResource(
- *          collectionOperations={
- *          "post"={"access_control"="is_granted('POST', object)"}
- *     },
- * )
+ * @ApiResource()
  * @UniqueEntity("email", message="Cette email existe déjà dans la base")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
