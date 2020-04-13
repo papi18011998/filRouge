@@ -2,40 +2,46 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * @ApiResource()
  * @UniqueEntity("email", message="Cette email existe déjà dans la base")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements UserInterface
+class User implements UserInterface,AdvancedUserInterface
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups("user")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("user")
      */
     private $prenom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("user")
      */
     private $nom;
     private $roles=[];
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("user")
      */
     private $email;
 
@@ -46,11 +52,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("user")
      */
     private $isActive;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
+     * @Groups("user")
      */
     private $role;
 
@@ -68,6 +76,11 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Compte", mappedBy="userCreator")
      */
     private $comptes;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $tel;
 
     public function __construct()
     {
@@ -248,5 +261,21 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    public function getTel(): ?string
+    {
+        return $this->tel;
+    }
+
+    public function setTel(string $tel): self
+    {
+        $this->tel = $tel;
+
+        return $this;
     } 
+    public function isAccountNonExpired(){return true;}
+    public function isAccountNonLocked(){return true;}
+    public function isCredentialsNonExpired(){return true;}
+    public function isEnabled(){return $this->isActive;}
 }

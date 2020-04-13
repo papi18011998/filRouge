@@ -47,4 +47,16 @@ class PartenaireRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function findOneByNinea($ninea){
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT * FROM user u,partenaire p,role r
+            WHERE p.id = u.partenaire_id
+            AND r.id = u.role_id
+            AND p.ninea = :ninea
+            ';
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['ninea' => $ninea]);
+        return $stmt->fetchAll();
+    }
 }
