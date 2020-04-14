@@ -56,100 +56,101 @@ class UserController extends AbstractController
     /**
      * @Route("/compte", name="compte", methods={"POST"})
      */
-public function addNewAccount(RoleRepository $repoRole,CompteGenerateur $compteGenerateur,Request $request,SerializerInterface $serializer,CompteRepository $repoCompte,PartenaireRepository $repoPartenaire,UserPasswordEncoderInterface $encoder,EntityManagerInterface $manager)
-{
-  // test des droits de l'utilisateur connecté  
-  $this->denyAccessUnlessGranted('ROLE_ADMIN',null,"Vos droits ne sont pas suffisant pour creer un compte");
-  // obtention des données entrees du compte
-  $compte=json_decode($request->getContent());
-  // recherche du partenaire entre
-  $partenaireSearch= $repoPartenaire->findOneByNinea($compte->partenaire->ninea);
-  // si le partenaire n'existe pas
-  if ($partenaireSearch===null) {
-     $newPartenaire = new Partenaire();
-     $newPartenaire->setNinea($compte->partenaire->ninea)
-                   ->setRc($compte->partenaire->rc);
-     //Ajout du partenaire
-     $manager->persist($newPartenaire);
-    // creation du user partenaire
-    $role = $repoRole->findOneByLibelle("ADMIN_PARTENAIRE");
-    $userPartenaire = new User();
-    $userPartenaire->setPrenom($compte->user->prenom)
-                   ->setNom($compte->user->nom)
-                   ->setEmail($compte->user->email)
-                   ->setPassword($encoder->encodePassword($userPartenaire,"passer@2"))
-                   ->setTel($compte->user->tel)
-                   ->setRole($role)
-                   ->setPartenaire($newPartenaire)
-                   ->setIsActive(true);
-    $manager->persist($userPartenaire);
-     // si le solde du compte est inferieur a 500000
-     if ($compte->solde < 500000) {
-       $erreurSolde=[
-         "status" => 403,
-         "message" => "Le solde par defaut doit etre egal ou superieur a 500000"
-       ];
-       return new JsonResponse($erreurSolde,403);
-     }else {
-        // creation du compte
-      $newCompte = new Compte();
-      $numeroCompte=$compteGenerateur->getNumeroCompte();
-      $newCompte->setNumeroCompte($numeroCompte)
-                ->setCreatedAt( new \DateTime())
-                ->setUserCreator($this->getUser())
-                ->setSolde($compte->solde)
-                ->setPartenaire($newPartenaire);
-      // enregistrement du depot initial
-      $newDepot = new Depot();
-      $newDepot->setDateDepot(new \DateTime())
-               ->setHeureDepot(new \DateTime())
-               ->setMontant($compte->solde)
-               ->setCompte($newCompte)
-               ->setUser($this->getUser());
-     $manager->persist($newDepot);
-     $manager->persist($newCompte);
-     }
-     $manager->flush();
-  }
-  // si le partenaire existe 
-  else {
-    $partenaireTrouve=$partenaireSearch;
-    // si le solde du compte est inferieur a 500000
-    if ($compte->solde < 500000) {
-          $erreurSolde=[
-            "status" => 403,
-            "message" => "Le solde par defaut doit etre egal ou superieur a 500000"
-          ];
-          return new JsonResponse($erreurSolde,200);
-        }
-    //si le solde est superieur a 500000
-    else {
-      // creation du compte
-    $newCompte = new Compte();
-    $numeroCompte=$compteGenerateur->getNumeroCompte();
-    $newCompte->setNumeroCompte($numeroCompte)
-              ->setCreatedAt( new \DateTime())
-              ->setUserCreator($this->getUser())
-              ->setSolde($compte->solde)
-              ->setPartenaire($partenaireTrouve);
-    // enregistrement du depot initial
-    $newDepot = new Depot();
-    $newDepot->setDateDepot(new \DateTime())
-             ->setHeureDepot(new \DateTime())
-             ->setMontant($compte->solde)
-             ->setCompte($newCompte)
-             ->setUser($this->getUser());
-   $manager->persist($newDepot);
-   $manager->persist($newCompte);
-   }
-   $manager->flush();
-  }
-  $accountCreated=[
-    "status" => 200,
-    "message" => 'Votre vient d etre creer avec un solde de '.$newDepot->getMontant().' FCFA'
-  ];
-  return new JsonResponse($accountCreated,200);
-}
+    public function addNewAccount(RoleRepository $repoRole,CompteGenerateur $compteGenerateur,Request $request,SerializerInterface $serializer,CompteRepository $repoCompte,PartenaireRepository $repoPartenaire,UserPasswordEncoderInterface $encoder,EntityManagerInterface $manager)
+    {
+      // test des droits de l'utilisateur connecté  
+      $this->denyAccessUnlessGranted('ROLE_ADMIN',null,"Vos droits ne sont pas suffisant pour creer un compte");
+      // obtention des données entrees du compte
+      $compte=json_decode($request->getContent());
+      // recherche du partenaire entre
+      $partenaireSearch= $repoPartenaire->findOneByNinea($compte->partenaire->ninea);
+      // si le partenaire n'existe pas
+      if ($partenaireSearch==null) {
+         $newPartenaire = new Partenaire();
+         $newPartenaire->setNinea($compte->partenaire->ninea)
+                       ->setRc($compte->partenaire->rc);
+         //Ajout du partenaire
+         $manager->persist($newPartenaire);
+        // creation du user partenaire
+        $role = $repoRole->findOneByLibelle("ADMIN_PARTENAIRE");
+        $userPartenaire = new User();
+        $userPartenaire->setPrenom($compte->user->prenom)
+                       ->setNom($compte->user->nom)
+                       ->setEmail($compte->user->email)
+                       ->setPassword($encoder->encodePassword($userPartenaire,"passer@2"))
+                       ->setTel($compte->user->tel)
+                       ->setRole($role)
+                       ->setPartenaire($newPartenaire)
+                       ->setIsActive(true);
+        $manager->persist($userPartenaire);
+         // si le solde du compte est inferieur a 500000
+         if ($compte->solde < 500000) {
+           $erreurSolde=[
+             "status" => 403,
+             "message" => "Le solde par defaut doit etre egal ou superieur a 500000"
+           ];
+           return new JsonResponse($erreurSolde,403);
+         }else {
+            // creation du compte
+          $newCompte = new Compte();
+          $numeroCompte=$compteGenerateur->getNumeroCompte();
+          $newCompte->setNumeroCompte($numeroCompte)
+                    ->setCreatedAt( new \DateTime())
+                    ->setUserCreator($this->getUser())
+                    ->setSolde($compte->solde)
+                    ->setPartenaire($newPartenaire);
+          // enregistrement du depot initial
+          $newDepot = new Depot();
+          $newDepot->setDateDepot(new \DateTime())
+                   ->setHeureDepot(new \DateTime())
+                   ->setMontant($compte->solde)
+                   ->setCompte($newCompte)
+                   ->setUser($this->getUser());
+         $manager->persist($newDepot);
+         $manager->persist($newCompte);
+         }
+         $manager->flush();
+      }
+      // si le partenaire existe 
+      else {
+        $partenaireTrouve= $partenaireSearch;
+        // si le solde du compte est inferieur a 500000
+        if ($compte->solde < 500000) {
+              $erreurSolde=[
+                "status" => 403,
+                "message" => "Le solde par defaut doit etre egal ou superieur a 500000"
+              ];
+              return new JsonResponse($erreurSolde,200);
+            }
+        //si le solde est superieur a 500000
+        else {
+          // creation du compte
+        $newCompte = new Compte();
+        $numeroCompte=$compteGenerateur->getNumeroCompte();
+        $newCompte->setNumeroCompte($numeroCompte)
+                  ->setCreatedAt( new \DateTime())
+                  ->setUserCreator($this->getUser())
+                  ->setSolde($compte->solde)
+                  ->setPartenaire($partenaireSearch);
+        // enregistrement du depot initial
+        $newDepot = new Depot();
+        $newDepot->setDateDepot(new \DateTime())
+                 ->setHeureDepot(new \DateTime())
+                 ->setMontant($compte->solde)
+                 ->setCompte($newCompte)
+                 ->setUser($this->getUser());
+       $manager->persist($newDepot);
+       $manager->persist($newCompte);
+       }
+       $manager->flush();
+      }
+      $accountCreated=[
+        "status" => 200,
+        "message" => 'Votre vient d etre creer avec un solde de '.$newDepot->getMontant().' FCFA'
+      ];
+      return new JsonResponse($accountCreated,200);
+    }
+    
 //------------------------- Filtres des roles----------------------//
  /**
   * @Route("/roles", methods={"GET"})
@@ -230,11 +231,11 @@ public function addNewAccount(RoleRepository $repoRole,CompteGenerateur $compteG
   }
   //-------------------------Recherche du partenaire en fonction de son ninea----//
   /**
-   * @Route("/ninea")
+   * @Route("/ninea", methods={"POST"})
    */
   public function getNinea(Request $request,PartenaireRepository $repoPartenaire,SerializerInterface $serializer){
     $partenaire=json_decode($request->getContent());
-    $getPartenaire = $repoPartenaire->findOneByNinea($partenaire->ninea);
+    $getPartenaire = $repoPartenaire->TrouveParNinea($partenaire->ninea);
     if ($getPartenaire == null) {
       $nullPartenaire = [null];
       return new JsonResponse($nullPartenaire,200);
@@ -251,6 +252,7 @@ public function addNewAccount(RoleRepository $repoRole,CompteGenerateur $compteG
   public function getConnectedUser(SerializerInterface $serializer)
   {
     $userConnectedJsonFormat = $serializer->serialize($this->getUser(),'json',['groups'=>'user']); 
-    return new JsonResponse($userConnectedJsonFormat,200);
+    return new JsonResponse($userConnectedJsonFormat,200,[],true);
   }
+  //-------------------------Partie operation à savoir les depots et les retraits d'argent----//
 }
