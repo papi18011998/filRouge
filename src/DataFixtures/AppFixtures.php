@@ -39,6 +39,7 @@ class AppFixtures extends Fixture
     $user->setPassword($this->encoder->encodePassword($user, "passer@1"));
     $user->setPrenom("Papa Ibrahima")
          ->setNom("NDIAYE")
+         ->setTel("776692537")
          ->setEmail("papaibrahima98@gmail.com")
          ->setRole($role)
          ->setIsActive(true);
@@ -48,6 +49,7 @@ class AppFixtures extends Fixture
     $user1->setPassword($this->encoder->encodePassword($user1, "passer@1"));
     $user1->setPrenom("Elhadji Ousmane")
          ->setNom("NDIAYE")
+         ->setTel("7743103")
          ->setEmail("elzo@gmail.com")
          ->setRole($role1)
          ->setIsActive(true);
@@ -56,6 +58,7 @@ class AppFixtures extends Fixture
     $user2 = new User();
     $user2->setPassword($this->encoder->encodePassword($user2, "passer@1"));
     $user2->setPrenom("djiby")
+          ->setTel("778653892")
          ->setNom("NDIAYE")
          ->setEmail("djiby@gmail.com")
          ->setRole($role2)

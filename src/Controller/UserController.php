@@ -254,5 +254,4 @@ class UserController extends AbstractController
     $userConnectedJsonFormat = $serializer->serialize($this->getUser(),'json',['groups'=>'user']); 
     return new JsonResponse($userConnectedJsonFormat,200,[],true);
   }
-  //-------------------------Partie operation à savoir les depots et les retraits d'argent----//
 }

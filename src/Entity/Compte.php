@@ -51,9 +51,27 @@ class Compte
      */
     private $userCreator;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Affectation", mappedBy="compteAffecte")
+     */
+    private $affectations;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="compteDepot")
+     */
+    private $transactionsDepot;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="compteRetrait")
+     */
+    private $transactionsRetrait;
+
     public function __construct()
     {
         $this->depots = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
+        $this->transactionsDepot = new ArrayCollection();
+        $this->transactionsRetrait = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -148,6 +166,99 @@ class Compte
     public function setUserCreator(?User $userCreator): self
     {
         $this->userCreator = $userCreator;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setCompteAffecte($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->contains($affectation)) {
+            $this->affectations->removeElement($affectation);
+            // set the owning side to null (unless already changed)
+            if ($affectation->getCompteAffecte() === $this) {
+                $affectation->setCompteAffecte(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactionsDepot(): Collection
+    {
+        return $this->transactionsDepot;
+    }
+
+    public function addTransaction(Transaction $transaction): self
+    {
+        if (!$this->transactionsDepot->contains($transaction)) {
+            $this->transactionsDepot[] = $transaction;
+            $transaction->setCompteTransite($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): self
+    {
+        if ($this->transactionsDepot->contains($transaction)) {
+            $this->transactionsDepot->removeElement($transaction);
+            // set the owning side to null (unless already changed)
+            if ($transaction->getCompteTransite() === $this) {
+                $transaction->setCompteTransite(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactionsRetrait(): Collection
+    {
+        return $this->transactionsRetrait;
+    }
+
+    public function addTransactionsRetrait(Transaction $transactionsRetrait): self
+    {
+        if (!$this->transactionsRetrait->contains($transactionsRetrait)) {
+            $this->transactionsRetrait[] = $transactionsRetrait;
+            $transactionsRetrait->setCompteRetrait($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransactionsRetrait(Transaction $transactionsRetrait): self
+    {
+        if ($this->transactionsRetrait->contains($transactionsRetrait)) {
+            $this->transactionsRetrait->removeElement($transactionsRetrait);
+            // set the owning side to null (unless already changed)
+            if ($transactionsRetrait->getCompteRetrait() === $this) {
+                $transactionsRetrait->setCompteRetrait(null);
+            }
+        }
 
         return $this;
     }

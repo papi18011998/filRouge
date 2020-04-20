@@ -82,10 +82,28 @@ class User implements UserInterface,AdvancedUserInterface
      */
     private $tel;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Affectation", mappedBy="userAffecte")
+     */
+    private $affectations;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="userDeposeur")
+     */
+    private $transactionsDeposeur;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="userRetrait")
+     */
+    private $transactionsRetrait;
+
     public function __construct()
     {
         $this->depots = new ArrayCollection();
         $this->comptes = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
+        $this->transactionsDeposeur = new ArrayCollection();
+        $this->transactionsRetrait = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -278,4 +296,97 @@ class User implements UserInterface,AdvancedUserInterface
     public function isAccountNonLocked(){return true;}
     public function isCredentialsNonExpired(){return true;}
     public function isEnabled(){return $this->isActive;}
+
+    /**
+     * @return Collection|Affectation[]
+     */
+    public function getAffectations(): Collection
+    {
+        return $this->affectations;
+    }
+
+    public function addAffectation(Affectation $affectation): self
+    {
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations[] = $affectation;
+            $affectation->setUserAffecte($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAffectation(Affectation $affectation): self
+    {
+        if ($this->affectations->contains($affectation)) {
+            $this->affectations->removeElement($affectation);
+            // set the owning side to null (unless already changed)
+            if ($affectation->getUserAffecte() === $this) {
+                $affectation->setUserAffecte(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactionsDeposeur(): Collection
+    {
+        return $this->transactionsDeposeur;
+    }
+
+    public function addTransactionsDeposeur(Transaction $transactionsDeposeur): self
+    {
+        if (!$this->transactionsDeposeur->contains($transactionsDeposeur)) {
+            $this->transactionsDeposeur[] = $transactionsDeposeur;
+            $transactionsDeposeur->setUserDeposeur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransactionsDeposeur(Transaction $transactionsDeposeur): self
+    {
+        if ($this->transactionsDeposeur->contains($transactionsDeposeur)) {
+            $this->transactionsDeposeur->removeElement($transactionsDeposeur);
+            // set the owning side to null (unless already changed)
+            if ($transactionsDeposeur->getUserDeposeur() === $this) {
+                $transactionsDeposeur->setUserDeposeur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactionsRetrait(): Collection
+    {
+        return $this->transactionsRetrait;
+    }
+
+    public function addTransactionsRetrait(Transaction $transactionsRetrait): self
+    {
+        if (!$this->transactionsRetrait->contains($transactionsRetrait)) {
+            $this->transactionsRetrait[] = $transactionsRetrait;
+            $transactionsRetrait->setUserRetrait($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransactionsRetrait(Transaction $transactionsRetrait): self
+    {
+        if ($this->transactionsRetrait->contains($transactionsRetrait)) {
+            $this->transactionsRetrait->removeElement($transactionsRetrait);
+            // set the owning side to null (unless already changed)
+            if ($transactionsRetrait->getUserRetrait() === $this) {
+                $transactionsRetrait->setUserRetrait(null);
+            }
+        }
+
+        return $this;
+    }
 }
