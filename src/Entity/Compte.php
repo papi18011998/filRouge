@@ -66,6 +66,11 @@ class Compte
      */
     private $transactionsRetrait;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $plafond;
+
     public function __construct()
     {
         $this->depots = new ArrayCollection();
@@ -259,6 +264,18 @@ class Compte
                 $transactionsRetrait->setCompteRetrait(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPlafond(): ?int
+    {
+        return $this->plafond;
+    }
+
+    public function setPlafond(int $plafond): self
+    {
+        $this->plafond = $plafond;
 
         return $this;
     }

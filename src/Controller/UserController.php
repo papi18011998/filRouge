@@ -83,11 +83,11 @@ class UserController extends AbstractController
                        ->setPartenaire($newPartenaire)
                        ->setIsActive(true);
         $manager->persist($userPartenaire);
-         // si le solde du compte est inferieur a 500000
-         if ($compte->solde < 500000) {
+         // si le solde du compte est inferieur a 500000 ou superieur a 1000000
+         if ($compte->solde < 500000 || $compte->solde > 1000000) {
            $erreurSolde=[
              "status" => 403,
-             "message" => "Le solde par defaut doit etre egal ou superieur a 500000"
+             "message" => "Le solde par defaut doit etre egal ou superieur a 500000 et inferieur ou egal a 1000000"
            ];
            return new JsonResponse($erreurSolde,403);
          }else {
@@ -98,6 +98,7 @@ class UserController extends AbstractController
                     ->setCreatedAt( new \DateTime())
                     ->setUserCreator($this->getUser())
                     ->setSolde($compte->solde)
+                    ->setPlafond(1000000)
                     ->setPartenaire($newPartenaire);
           // enregistrement du depot initial
           $newDepot = new Depot();
@@ -114,14 +115,14 @@ class UserController extends AbstractController
       // si le partenaire existe 
       else {
         $partenaireTrouve= $partenaireSearch;
-        // si le solde du compte est inferieur a 500000
-        if ($compte->solde < 500000) {
-              $erreurSolde=[
-                "status" => 403,
-                "message" => "Le solde par defaut doit etre egal ou superieur a 500000"
-              ];
-              return new JsonResponse($erreurSolde,200);
-            }
+         // si le solde du compte est inferieur a 500000 ou superieur a 1000000
+         if ($compte->solde < 500000 || $compte->solde > 1000000) {
+          $erreurSolde=[
+            "status" => 403,
+            "message" => "Le solde par defaut doit etre egal ou superieur a 500000 et inferieur ou egal a 1000000"
+          ];
+          return new JsonResponse($erreurSolde,403);
+        }
         //si le solde est superieur a 500000
         else {
           // creation du compte
@@ -131,6 +132,7 @@ class UserController extends AbstractController
                   ->setCreatedAt( new \DateTime())
                   ->setUserCreator($this->getUser())
                   ->setSolde($compte->solde)
+                  ->setPlafond(1000000)
                   ->setPartenaire($partenaireSearch);
         // enregistrement du depot initial
         $newDepot = new Depot();
